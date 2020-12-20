@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mytestDocument</title>
+</head>
+<body>
+    <input type="number" name="num1" id="num1">+<input type="number" name="num2" id="num2">
+    <p id="print"></p>
+    <input type="button" name="reset" id="reset" value="plus">
+    <script>
+        var importObject = {
+            env: {
+                memory: new WebAssembly.Memory({ initial: 1024 }),
+                table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' }),
+                emscripten_resize_heap: arg => 0,
+                __handle_stack_overflow : () => console.log("overflow")
+            },
+            imports: { imported_func: arg => console.log(arg) }
+        };
+
+        WebAssembly.compileStreaming(fetch('wasm.wasm'))
+        .then(module => WebAssembly.instantiate(module, importObject))
+        .then(instance => {
+            document.getElementById("reset").addEventListener(
+                'click',()=>{
+                    let n1 = document.getElementById('num1').value
+                    let n2 = document.getElementById('num2').value
+                    let result = instance.exports.addnum(n1,n2);
+                    var p = document.getElementById("print");
+                    p.innerText = result;
+                },false
+            );
+        });
+    </script>
+</body>
+</html>
