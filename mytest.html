@@ -11,6 +11,11 @@
     <input type="button" name="reset" id="reset" value="plus">
     <script>
         var importObject = {
+            wasi_snapshot_preview1:{
+                proc_exit : arg => console.log(arg),
+                args_get : (a,b) => {console.log("a:"+a+"\nb:"+b);return 0},
+                args_sizes_get : (a,b) => {console.log("a:"+a+"\nb:"+b);return 0},
+            },
             env: {
                 memory: new WebAssembly.Memory({ initial: 1024 }),
                 table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' }),
